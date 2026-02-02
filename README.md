@@ -1,98 +1,89 @@
-Fuel Blend Property Prediction — Shell.ai Hackathon 2025
-Overview
+# Fuel Blend Property Prediction — Shell.ai Hackathon 2025
 
-This project was developed as part of the Shell.ai Hackathon for Sustainable and Affordable Energy 2025. The challenge focused on predicting the final properties of sustainable fuel blends based on their component fractions and chemical properties.
+## Overview
 
-The objective was to build high-accuracy machine learning models that can estimate multiple blend properties, helping accelerate sustainable fuel formulation using AI-driven prediction.
+This project was developed for the **Shell.ai Hackathon for Sustainable and Affordable Energy 2025**. The objective was to build machine learning models to predict final fuel blend properties using component fractions and component-level property data.
 
-Our solution achieved a validation score of 90.183 using an advanced stacking ensemble approach.
+We designed a feature-rich ML pipeline with per-target feature selection and adaptive model assignment. Each blend property is modeled separately using the best-performing regressor selected through validation.
 
-Problem Statement
+**Final Hackathon Score: 90.183**
+
+---
+
+## Problem Statement
 
 Given:
 
-Fractional composition of multiple fuel components
-
-Property values for each component
+- Fractional composition of multiple fuel components
+- Property values of each component
 
 Predict:
 
-Final blended fuel properties across multiple target variables.
+- Final blend properties across 10 target variables.
 
-This is a multi-target regression problem involving structured numerical data and domain-driven feature interactions.
+This is a structured multi-target regression task aimed at enabling AI-driven sustainable fuel formulation.
 
-Approach Summary
+---
 
-We built a high-performance regression pipeline combining:
+## Solution Approach
 
-Advanced feature engineering
+Instead of using a single model for all targets, we built a **per-target adaptive modeling pipeline**:
 
-Statistical aggregation features
+- Advanced engineered features
+- Recursive Feature Elimination (RFE) per target
+- Model selection per property
+- Cross-validated evaluation
+- Ensemble models where beneficial
 
-Weighted component-property interactions
+Each BlendProperty is trained independently using its best-performing model.
 
-PCA-based dimensionality reduction
+---
 
-Multi-model stacking ensemble
+## Feature Engineering
 
-The system predicts all blend properties using cross-validated ensemble learning.
+We generated extensive engineered features, including:
 
-Feature Engineering
+- Fraction × property interaction features
+- Weighted means and weighted variances
+- Statistical aggregates across components
+- Distribution metrics (skewness, kurtosis)
+- PCA components from property space
+- Derived blend-level statistical features
 
-Key engineered features include:
+Feature selection was then applied using **RFE to select the top 20 features per target**.
 
-Fraction × property interaction features
+---
 
-Weighted mean and variance of component properties
+## Modeling Strategy
 
-Statistical aggregations (min, max, mean, std)
+For each target property:
 
-Distribution metrics (skewness, kurtosis)
+- RFE selects best engineered features
+- Multiple regressors are evaluated
+- Best model is assigned per target
 
-PCA components from property space
+Models used across targets:
 
-Blend-level derived signals
+- Ridge Regression
+- RandomForestRegressor
+- HuberRegressor
+- Stacking Ensemble
+- LightGBM Regressor
 
-This expanded the feature space significantly and improved predictive signal.
+This allows each property to use the model that fits it best rather than forcing one global model.
 
-Models Used
+---
 
-We used a stacking-style weighted ensemble of:
+## Validation Method
 
-LightGBM Regressor — primary high-performance learner
+- K-Fold Cross Validation
+- Out-of-fold evaluation
+- Per-target MAPE reporting
+- Model assignment based on validation performance
 
-Random Forest Regressor — nonlinear stability model
+**Metric:** Mean Absolute Percentage Error (MAPE)
 
-Ridge Regression — linear regularized baseline
+---
 
-Model weights were computed using inverse validation MAPE scores for each target.
 
-Validation Strategy
 
-5-Fold Cross Validation
-
-Out-of-fold predictions for each base model
-
-Weighted ensemble based on validation performance
-
-Metric: Mean Absolute Percentage Error (MAPE)
-
-Final Performance
-
-Validation Score: 90.183
-
-Ensemble consistently outperformed individual base models across targets.
-
-Tech Stack
-
-Python
-
-Pandas, NumPy
-
-LightGBM
-
-Scikit-learn
-
-PCA
-
-SciPy statistics (skew, kurtosis)
